@@ -11,7 +11,7 @@ param(
         Mandatory = $false,
         HelpMessage = "Skip folders that have LastWriteTime set to less than this many hours ago."
     )]
-    [string] $HoursLastWrite = 6
+    [string] $HoursLastWrite = 20
 )
 
 $MovieDirectoryLocations = Get-Volume
