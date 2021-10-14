@@ -27,6 +27,15 @@ $MovieFolders = Get-ChildItem -Path $MovieDirectoryLocations.MovieDirectories
 $Transcoded = Get-ChildItem $TranscodedFiles -Directory
 | Where-Object { $_.GetFiles().Count -ne 0 -and $_.LastWriteTime -lt (Get-Date).AddHours(-$HoursLastWrite) }
 
+$Transcoded = Get-ChildItem $TranscodedFiles -Directory
+| Where-Object { $_.GetFiles().Count -ne 0 }
+| Where-Object {
+    (Get-ChildItem $_.FullName -File -Recurse
+    | Where-Object {
+        $_.LastWriteTime -gt (Get-Date).AddHours(-$HoursLastWrite)
+    }) -eq $null
+}
+
 foreach ($Movie in $Transcoded) {
     #Remove Empty Folders
     Get-ChildItem -Path $Movie -recurse
