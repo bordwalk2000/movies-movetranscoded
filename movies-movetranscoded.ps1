@@ -25,9 +25,6 @@ $MovieFolders = Get-ChildItem -Path $MovieDirectoryLocations.MovieDirectories
 | Sort-Object Name
 
 $Transcoded = Get-ChildItem $TranscodedFiles -Directory
-| Where-Object { $_.GetFiles().Count -ne 0 -and $_.LastWriteTime -lt (Get-Date).AddHours(-$HoursLastWrite) }
-
-$Transcoded = Get-ChildItem $TranscodedFiles -Directory
 | Where-Object { $_.GetFiles().Count -ne 0 }
 | Where-Object {
     (Get-ChildItem $_.FullName -File -Recurse
