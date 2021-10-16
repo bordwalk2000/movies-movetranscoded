@@ -25,7 +25,7 @@ $MovieFolders = Get-ChildItem -Path $MovieDirectoryLocations.MovieDirectories
 @{label = "minascii"; Expression = { [int[]][char[]]($_.Name).replace('-', '')[0] } },
 @{label = "maxascii"; Expression = { [int[]][char[]]($_.Name).replace('-', '')[1] } }
 | Sort-Object Name
-Write-Verbose "Fouund Movies Folder Lists"
+Write-Verbose "Found Movies Folder Lists"
 Write-Verbose ($MovieFolders | Out-String)
 
 # Grabs folders located in the transcoded folder that contain files and those files haven't been modified in X many hours.
