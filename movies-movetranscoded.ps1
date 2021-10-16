@@ -21,9 +21,9 @@ $MovieDirectoryLocations = Get-Volume
 
 # Looks at the folders in each one of the Movies directories and figures out their ascii values.
 $MovieFolders = Get-ChildItem -Path $MovieDirectoryLocations.MovieDirectories
-| Select-Object Name, FullName,
-@{label = "minascii"; Expression = { [int[]][char[]]($_.Name).replace('-', '')[0] } },
-@{label = "maxascii"; Expression = { [int[]][char[]]($_.Name).replace('-', '')[1] } }
+| Select-Object @{label = "Name"; Expression = { $_.Name.ToUpper() } }, FullName,
+@{label = "minascii"; Expression = { [int[]][char[]]($_.Name).ToUpper().replace('-', '')[0] } },
+@{label = "maxascii"; Expression = { [int[]][char[]]($_.Name).ToUpper().replace('-', '')[1] } }
 | Sort-Object Name
 Write-Verbose "Found Movies Folder Lists"
 Write-Verbose ($MovieFolders | Out-String)
@@ -52,7 +52,7 @@ foreach ($Movie in $Transcoded) {
 
     # Move Movie Folders
     foreach ($Directory in $MovieFolders) {
-        if (([int]$Movie.Name[0] -ge $Directory.minascii) -and ([int]$Movie.Name[0] -le $Directory.maxascii)) {
+        if (([int]$Movie.Name.ToUpper()[0] -ge $Directory.minascii) -and ([int]$Movie.Name.ToUpper()[0] -le $Directory.maxascii)) {
             Write-Verbose "Moving $($Movie.Name) to $($Directory.FullName)"
             Move-Item -Path $Movie.FullName -Destination $Directory.FullName -ErrorAction Continue
         }
