@@ -25,6 +25,8 @@ $MovieFolders = Get-ChildItem -Path $MovieDirectoryLocations.MovieDirectories
 @{label = "minascii"; Expression = { [int[]][char[]]($_.Name).replace('-', '')[0] } },
 @{label = "maxascii"; Expression = { [int[]][char[]]($_.Name).replace('-', '')[1] } }
 | Sort-Object Name
+Write-Verbose "Fouund Movies Folder Lists"
+Write-Verbose ($MovieFolders | Out-String)
 
 # Grabs folders located in the transcoded folder that contain files and those files haven't been modified in X many hours.
 $Transcoded = Get-ChildItem $TranscodedFiles -Directory
@@ -35,10 +37,15 @@ $Transcoded = Get-ChildItem $TranscodedFiles -Directory
         $_.LastWriteTime -gt (Get-Date).AddHours(-$HoursLastWrite)
     }) -eq $null
 }
+Write-Verbose "$($Transcoded.count) Movies Found"
+Write-Verbose ($Transcoded.Name | Out-String)
 
 # Process each one of those folders to remove empty folders and move them to correct Movies folder location.
 foreach ($Movie in $Transcoded) {
+    Write-Verbose "Processing $($Movie.Name)"
+
     # Remove Empty Folders
+    Write-Verbose "Removing Empty Folders"
     Get-ChildItem -Path $Movie -recurse
     | Where-Object { $_.PSIsContainer -and @(Get-ChildItem -Lit $_.Fullname -r | Where-Object { !$_.PSIsContainer }).Length -eq 0 }
     | Remove-Item -Recurse
@@ -46,6 +53,7 @@ foreach ($Movie in $Transcoded) {
     # Move Movie Folders
     foreach ($Directory in $MovieFolders) {
         if (([int]$Movie.Name[0] -ge $Directory.minascii) -and ([int]$Movie.Name[0] -le $Directory.maxascii)) {
+            Write-Verbose "Moving $($Movie.Name) to $($Directory.FullName)"
             Move-Item -Path $Movie.FullName -Destination $Directory.FullName -ErrorAction Continue
         }
     }
